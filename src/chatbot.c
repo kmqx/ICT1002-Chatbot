@@ -155,9 +155,8 @@ int chatbot_do_exit(int inc, char *inv[], char *response, int n) {
  */
 int chatbot_is_load(const char *intent) {
 
-	/* to be implemented */
-
-	return 0;
+    /* to be implemented*/
+    return compare_token(intent, "load") == 0;
 
 }
 
@@ -193,9 +192,13 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n) {
 int chatbot_is_question(const char *intent) {
 
 	/* to be implemented */
-
-	return 0;
-
+    char keywords[3][6] = {"what", "where", "who"};
+    for(int i=0; i < 3; i++){
+        if(compare_token(intent,keywords) == 0){
+            return 1;
+        }
+    }
+    return 0;
 }
 
 
@@ -234,8 +237,7 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 int chatbot_is_reset(const char *intent) {
 
 	/* to be implemented */
-
-	return 0;
+    return compare_token(intent, "reset") == 0;
 
 }
 
@@ -265,15 +267,13 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
  *  intent - the intent
  *
  * Returns:
- *  1, if the intent is "what", "where", or "who"
+ *  1, if the intent is "save"
  *  0, otherwise
  */
 int chatbot_is_save(const char *intent) {
 
 	/* to be implemented */
-
-	return 0;
-
+	return compare_token(intent,"save") == 0;
 }
 
 
