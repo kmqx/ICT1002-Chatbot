@@ -27,7 +27,16 @@
 #define KB_NOTFOUND -1
 #define KB_INVALID  -2
 #define KB_NOMEM    -3
- 
+
+struct EntityLL{
+    char entity[MAX_ENTITY];
+    char what[MAX_RESPONSE];
+    char who[MAX_RESPONSE];
+    char where[MAX_RESPONSE];
+    struct EntityLL *next;
+};
+
+
 /* functions defined in main.c */
 int compare_token(const char *token1, const char *token2);
 void prompt_user(char *buf, int n, const char *format, ...);

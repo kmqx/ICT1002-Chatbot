@@ -194,7 +194,7 @@ int chatbot_is_question(const char *intent) {
 	/* to be implemented */
     char keywords[3][6] = {"what", "where", "who"};
     for(int i=0; i < 3; i++){
-        if(compare_token(intent,keywords) == 0){
+        if(compare_token(intent,keywords[i]) == 0){
             return 1;
         }
     }
