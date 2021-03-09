@@ -15,7 +15,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "chat1002.h"
+
+// global vars
+struct EntityLL *head;
+struct EntityLL *tail;
 
 /*
  * Get the response to a question.
@@ -58,9 +63,60 @@ int knowledge_get(const char *intent, const char *entity, char *response, int n)
 int knowledge_put(const char *intent, const char *entity, const char *response) {
 
 	/* to be implemented */
-
-	return KB_INVALID;
-
+	// invalid question word
+	if(!chatbot_is_question(intent)){
+	    return KB_INVALID;
+	}
+	struct EntityLL *current;
+	current = head;
+	int entityFound = 0;
+	// existing data structure
+    if(current != NULL){
+        // iterate linked-list
+        while(current != NULL){
+            if (compare_token(current->entity,entity) == 0){
+                entityFound = 1;
+                break;
+            }
+            // current node is not target, move on
+            current = current->next;
+        }
+    }
+    // target entity does not exist, create one and add to linked-list
+    if (!entityFound){
+        // allocate memory to prevent unexpected behaviour
+        struct EntityLL *target = calloc(1,sizeof(struct EntityLL));
+        strcpy(target->entity,entity);
+        memset(target->what,0,MAX_RESPONSE);
+        memset(target->where,0,MAX_RESPONSE);
+        memset(target->who,0,MAX_RESPONSE);
+        target->next = NULL;
+        current = target;
+        // check if current node is first node in linked-list
+        if (head == NULL){
+            head = target;
+            tail = target;
+        }
+        // if not first node and entity not found, create and add to linked-list
+        else{
+            tail->next = target;
+            tail = target;
+        }
+    }
+    // check and set response
+    if(compare_token(intent,"what") == 0){
+        // process what
+        strcpy(current->what,response);
+    }
+    else if (compare_token(intent, "where") == 0){
+        // process where
+        strcpy(current->where,response);
+    }
+    else{
+        // process who
+        strcpy(current->who,response);
+    }
+    return KB_OK;
 }
 
 
@@ -73,12 +129,80 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
  * Returns: the number of entity/response pairs successful read from the file
  */
 int knowledge_read(FILE *f) {
-
 	/* to be implemented */
-
-	return 0;
+    if(f == NULL){
+        return -1;
+    }
+    int count = 0;
+    char entitybuf[MAX_ENTITY];
+    char responsebuf[MAX_RESPONSE];
+    char *tokenptr;
+    // each line has maximum one entity and one response plus a =
+    char line[MAX_RESPONSE + MAX_ENTITY + 1];
+    char intentkey[MAX_INTENT];
+    while(fgets(line,sizeof line, f) != NULL) {
+        if (line[0] == '[') {
+            // process section heading
+            char *tmp = strchr(line, ']');
+            int length = tmp - line;
+            strncpy(intentkey, line + 1, length);
+            intentkey[length - 1] = '\0';
+            continue;
+        }
+        // check if current line is new line
+        if (isspace(line[0])) {
+            continue;
+        }
+        tokenptr = strtok(line, "=");
+        strcpy(entitybuf, tokenptr);
+        tokenptr = strtok(NULL, "=");
+        strcpy(responsebuf, tokenptr);
+        int success = knowledge_put(intentkey, entitybuf, responsebuf);
+        if (success != KB_OK) {
+            return success;
+        }
+        // clear buffer
+        memset(entitybuf, 0, sizeof entitybuf);
+        memset(responsebuf, 0, sizeof entitybuf);
+        count++;
+    }
+    return count;
 }
 
+// debug
+/*
+int compare_token(const char *token1, const char *token2) {
+
+    int i = 0;
+    while (token1[i] != '\0' && token2[i] != '\0') {
+        if (toupper(token1[i]) < toupper(token2[i]))
+            return -1;
+        else if (toupper(token1[i]) > toupper(token2[i]))
+            return 1;
+        i++;
+    }
+
+    if (token1[i] == '\0' && token2[i] == '\0')
+        return 0;
+    else if (token1[i] == '\0')
+        return -1;
+    else
+        return 1;
+}
+int main(){
+    FILE *fp = fopen("..\\src\\ICT1002_Group Project Assignment_Sample.ini","r");
+    int c = knowledge_read(fp);
+    printf("%d",c);
+    struct EntityLL *c1 = head;
+    while(c1 != NULL){
+        printf("Entity: %s\n",c1->entity);
+        printf("what: %s\n",c1->what);
+        printf("where: %s\n",c1->where);
+        printf("who: %s\n",c1->who);
+        c1 = c1->next;
+    }
+}
+*/
 
 /*
  * Reset the knowledge base, removing all know entitities from all intents.
