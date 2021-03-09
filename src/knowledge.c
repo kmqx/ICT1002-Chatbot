@@ -168,10 +168,9 @@ int knowledge_read(FILE *f) {
     }
     return count;
 }
-
-// debug
 /*
-int compare_token(const char *token1, const char *token2) {
+// debug
+//int compare_token(const char *token1, const char *token2) {
 
     int i = 0;
     while (token1[i] != '\0' && token2[i] != '\0') {
@@ -201,16 +200,26 @@ int main(){
         printf("who: %s\n",c1->who);
         c1 = c1->next;
     }
+    c1=head;
+    knowledge_reset();
+    return 0;
 }
 */
-
 /*
  * Reset the knowledge base, removing all know entitities from all intents.
  */
 void knowledge_reset() {
-
-	/* to be implemented */
-
+	// free all nodes in linked-list and reset head & tail
+	struct EntityLL *current = head;
+    struct EntityLL *next;
+	while (current != NULL){
+	   next = current->next;
+	   memset(current,0, sizeof(struct EntityLL));
+	   free(current);
+	   current = next;
+	}
+	head = NULL;
+	tail = NULL;
 }
 
 
