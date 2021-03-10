@@ -58,21 +58,21 @@ int knowledge_get(const char *intent, const char *entity, char *response, int n)
         if (compare_token(intent, "what") == 0) {
             // process what
             if (current->what[0] != '\0') {
-                response = current->what;
+                strncpy(response,current->what,n);
                 return KB_OK;
             }
         }
         else if (compare_token(intent, "where") == 0) {
             // process where
             if (current->where[0] != '\0') {
-                response = current->where;
+                strncpy(response,current->where,n);
                 return KB_OK;
             }
         }
         else {
             // process who
             if (current->who[0] != '\0') {
-                response = current->who;
+                strncpy(response,current->who,n);
                 return KB_OK;
             }
         }
@@ -204,10 +204,10 @@ int knowledge_read(FILE *f) {
     }
     return count;
 }
-/*
-// debug
-//int compare_token(const char *token1, const char *token2) {
 
+// debug
+/*
+int compare_token(const char *token1, const char *token2) {
     int i = 0;
     while (token1[i] != '\0' && token2[i] != '\0') {
         if (toupper(token1[i]) < toupper(token2[i]))
@@ -230,17 +230,33 @@ int main(){
     printf("%d",c);
     struct EntityLL *c1 = head;
     while(c1 != NULL){
+        printf("-------------------------------\n");
         printf("Entity: %s\n",c1->entity);
         printf("what: %s\n",c1->what);
         printf("where: %s\n",c1->where);
         printf("who: %s\n",c1->who);
+        printf("-------------------------------\n");
         c1 = c1->next;
     }
-    c1=head;
+    char tmp[MAX_RESPONSE];
+    int success;
+    success = knowledge_get("where","SIT",&tmp,MAX_RESPONSE);
+    if (success != KB_OK){
+        printf("Failed");
+        return 0;
+    }
+    printf("%s",tmp);
     knowledge_reset();
+    success = knowledge_get("where","SIT",&tmp,MAX_RESPONSE);
+    if (success != KB_OK){
+        printf("Failed");
+        return success;
+    }
+    printf("%s",tmp);
     return 0;
 }
 */
+
 /*
  * Reset the knowledge base, removing all know entitities from all intents.
  */
