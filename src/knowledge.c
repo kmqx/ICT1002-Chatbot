@@ -37,11 +37,47 @@ struct EntityLL *tail;
  *   KB_INVALID, if 'intent' is not a recognised question word
  */
 int knowledge_get(const char *intent, const char *entity, char *response, int n) {
-
 	/* to be implemented */
-
+	if (!chatbot_is_question(intent)){
+	    return KB_INVALID;
+	}
+	// valid question
+	struct EntityLL *current;
+	current = head;
+	int found = 0;
+	// traverse and search linked-list for
+	while (current != NULL){
+        if (compare_token(current->entity,entity) == 0){
+            found = 1;
+            break;
+        }
+        current = current->next;
+	}
+	if (found) {
+        // check if intent has corresponding response
+        if (compare_token(intent, "what") == 0) {
+            // process what
+            if (current->what[0] != '\0') {
+                response = current->what;
+                return KB_OK;
+            }
+        }
+        else if (compare_token(intent, "where") == 0) {
+            // process where
+            if (current->where[0] != '\0') {
+                response = current->where;
+                return KB_OK;
+            }
+        }
+        else {
+            // process who
+            if (current->who[0] != '\0') {
+                response = current->who;
+                return KB_OK;
+            }
+        }
+    }
 	return KB_NOTFOUND;
-
 }
 
 
@@ -168,10 +204,9 @@ int knowledge_read(FILE *f) {
     }
     return count;
 }
-
-// debug
 /*
-int compare_token(const char *token1, const char *token2) {
+// debug
+//int compare_token(const char *token1, const char *token2) {
 
     int i = 0;
     while (token1[i] != '\0' && token2[i] != '\0') {
@@ -201,16 +236,26 @@ int main(){
         printf("who: %s\n",c1->who);
         c1 = c1->next;
     }
+    c1=head;
+    knowledge_reset();
+    return 0;
 }
 */
-
 /*
  * Reset the knowledge base, removing all know entitities from all intents.
  */
 void knowledge_reset() {
-
-	/* to be implemented */
-
+	// free all nodes in linked-list and reset head & tail
+	struct EntityLL *current = head;
+    struct EntityLL *next;
+	while (current != NULL){
+	   next = current->next;
+	   memset(current,0, sizeof(struct EntityLL));
+	   free(current);
+	   current = next;
+	}
+	head = NULL;
+	tail = NULL;
 }
 
 
