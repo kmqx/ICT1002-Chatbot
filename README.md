@@ -9,3 +9,5 @@ Download and install mingw (x86-64)
 - win32 for threads is selected 
 
 Compile and debug program from existing CMake file.
+
+![workflow status](https://github.com/alloygoh/ICT1002-Chatbot/actions/workflows/cmake.yml/badge.svg)
