@@ -245,6 +245,8 @@ int main(){
         printf("Failed");
         return 0;
     }
+    FILE *test = fopen("..\\test.ini","w");
+    knowledge_write(test);
     printf("%s",tmp);
     knowledge_reset();
     success = knowledge_get("where","SIT",&tmp,MAX_RESPONSE);
@@ -284,5 +286,42 @@ void knowledge_reset() {
 void knowledge_write(FILE *f) {
 
 	/* to be implemented */
-
+	struct EntityLL *current = head;
+    fprintf(f,"[what]\n");
+    // traverse linked-list to print for what
+    while (current != NULL){
+        // node has response for what
+        if (current->what[0] != '\0'){
+            // no need \n as response alr has \n
+            fprintf(f,"%s=%s",current->entity,current->what);
+        }
+        current = current->next;
+    }
+    // reset current to start of linked-list
+    current = head;
+    // \n at start to create visual spacing between sections
+    fprintf(f,"\n[where]\n");
+    // traverse linked-list to print for where
+    while (current != NULL){
+        // node has response for where
+        if (current->where[0] != '\0'){
+            // no need \n as response alr has \n
+            fprintf(f,"%s=%s",current->entity,current->where);
+        }
+        current = current->next;
+    }
+    // reset current to start of linked-list
+    current = head;
+    // \n at start to create visual spacing between sections
+    fprintf(f,"\n[who]\n");
+    // traverse linked-list to print for who
+    while (current != NULL){
+        // node has response for what
+        if (current->who[0] != '\0'){
+            // no need \n as response alr has \n
+            fprintf(f,"%s=%s",current->entity,current->who);
+        }
+        current = current->next;
+    }
+    // fclose to be handled by caller function
 }
