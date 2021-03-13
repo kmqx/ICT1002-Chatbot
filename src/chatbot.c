@@ -155,9 +155,7 @@ int chatbot_do_exit(int inc, char *inv[], char *response, int n) {
  */
 int chatbot_is_load(const char *intent) {
 
-    /* to be implemented*/
-    return compare_token(intent, "load") == 0;
-
+    return compare_token(intent, "LOAD") == 0;
 }
 
 
@@ -172,9 +170,28 @@ int chatbot_is_load(const char *intent) {
  */
 int chatbot_do_load(int inc, char *inv[], char *response, int n) {
 
-	/* to be implemented */
+    if(inv[1] == NULL)
+    {
+        snprintf(response,n,"Filename cannot be empty");
+    }
+    else
+    {
+        FILE *f;
+        f = fopen(inv[1],"r");
+        if(f == NULL)
+        {
+            snprintf(response,n, "File Not Found!");
+        }
+        else
+        {
+            int nresponses = knowledge_read(f);
+            fclose(f);
+            snprintf(response,n,"Loaded %d responses from file %s", nresponses,inv[1]);
+        }
 
-	return 0;
+    }
+
+    return 0;
 
 }
 
@@ -236,11 +253,8 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
  */
 int chatbot_is_reset(const char *intent) {
 
-	/* to be implemented */
-    return compare_token(intent, "reset") == 0;
-
+    return compare_token(intent,"RESET") == 0;
 }
-
 
 /*
  * Reset the chatbot.
@@ -253,7 +267,8 @@ int chatbot_is_reset(const char *intent) {
  */
 int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
 
-	/* to be implemented */
+	knowledge_reset();
+	snprintf(response,n, "All Data has been wiped");
 
 	return 0;
 
@@ -273,7 +288,7 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
 int chatbot_is_save(const char *intent) {
 
 	/* to be implemented */
-	return compare_token(intent,"save") == 0;
+	return compare_token(intent,"SAVE") == 0;
 }
 
 
@@ -288,9 +303,19 @@ int chatbot_is_save(const char *intent) {
  */
 int chatbot_do_save(int inc, char *inv[], char *response, int n) {
 
-	/* to be implemented */
-
-	return 0;
+	if(inv[1] == NULL)
+    {
+	    snprintf(response,n, "CANNOT SAVE A FILE WITH NO NAME!");
+    }
+	else
+    {
+        FILE *f;
+        f = fopen(inv[1], "w");
+        knowledge_write(f);
+        fclose(f);
+        snprintf(response,n,"File has been successfully saved to %s", inv[1]);
+    }
+    return 0;
 
 }
 
