@@ -52,7 +52,7 @@
  */
 const char *chatbot_botname() {
 
-	return "Chatbot";
+    return "Chatbot";
 
 }
 
@@ -64,7 +64,7 @@ const char *chatbot_botname() {
  */
 const char *chatbot_username() {
 
-	return "User";
+    return "User";
 
 }
 
@@ -81,29 +81,29 @@ const char *chatbot_username() {
  */
 int chatbot_main(int inc, char *inv[], char *response, int n) {
 
-	/* check for empty input */
-	if (inc < 1) {
-		snprintf(response, n, "");
-		return 0;
-	}
+    /* check for empty input */
+    if (inc < 1) {
+        snprintf(response, n, "");
+        return 0;
+    }
 
-	/* look for an intent and invoke the corresponding do_* function */
-	if (chatbot_is_exit(inv[0]))
-		return chatbot_do_exit(inc, inv, response, n);
-	else if (chatbot_is_smalltalk(inv[0]))
-		return chatbot_do_smalltalk(inc, inv, response, n);
-	else if (chatbot_is_load(inv[0]))
-		return chatbot_do_load(inc, inv, response, n);
-	else if (chatbot_is_question(inv[0]))
-		return chatbot_do_question(inc, inv, response, n);
-	else if (chatbot_is_reset(inv[0]))
-		return chatbot_do_reset(inc, inv, response, n);
-	else if (chatbot_is_save(inv[0]))
-		return chatbot_do_save(inc, inv, response, n);
-	else {
-		snprintf(response, n, "I don't understand \"%s\".", inv[0]);
-		return 0;
-	}
+    /* look for an intent and invoke the corresponding do_* function */
+    if (chatbot_is_exit(inv[0]))
+        return chatbot_do_exit(inc, inv, response, n);
+    else if (chatbot_is_smalltalk(inv[0]))
+        return chatbot_do_smalltalk(inc, inv, response, n);
+    else if (chatbot_is_load(inv[0]))
+        return chatbot_do_load(inc, inv, response, n);
+    else if (chatbot_is_question(inv[0]))
+        return chatbot_do_question(inc, inv, response, n);
+    else if (chatbot_is_reset(inv[0]))
+        return chatbot_do_reset(inc, inv, response, n);
+    else if (chatbot_is_save(inv[0]))
+        return chatbot_do_save(inc, inv, response, n);
+    else {
+        snprintf(response, n, "I don't understand \"%s\".", inv[0]);
+        return 0;
+    }
 
 }
 
@@ -119,7 +119,7 @@ int chatbot_main(int inc, char *inv[], char *response, int n) {
  *  0, otherwise
  */
 int chatbot_is_exit(const char *intent) {
-	return compare_token(intent, "exit") == 0 || compare_token(intent, "quit") == 0;
+    return compare_token(intent, "exit") == 0 || compare_token(intent, "quit") == 0;
 }
 
 
@@ -133,8 +133,8 @@ int chatbot_is_exit(const char *intent) {
  *   0 (the chatbot always continues chatting after a question)
  */
 int chatbot_do_exit(int inc, char *inv[], char *response, int n) {
-	snprintf(response, n, "Goodbye!");
-	return 0;
+    snprintf(response, n, "Goodbye!");
+    return 0;
 }
 
 
@@ -163,51 +163,39 @@ int chatbot_is_load(const char *intent) {
  *   0 (the chatbot always continues chatting after loading knowledge)
  */
 int chatbot_do_load(int inc, char *inv[], char *response, int n) {
-<<<<<<< Updated upstream
-    // if empty filename
-    if(inv[1] == NULL){
-        snprintf(response,n,"Filename cannot be empty");
+    int start = 1;
+    // if input is intent only
+    if (inc == 1) {
+        snprintf(response, n, "Filename cannot be empty!");
         return 0;
     }
-    FILE *f;
-    // BUG:DOES NOT ACCOUNT FOR CONNECTIVE WORDS
-    f = fopen(inv[1],"r");
-=======
-    if((inv[1] == NULL) || (strcmp(inv[1],"FROM") != 0))
-    {
-        snprintf(response,n, "WHERE ARE YOU LOADING FROM");
-        return 0;
-    }
-    if(inv[2] == NULL){
-        snprintf(response,n,"Filename cannot be empty");
-        return 0;
-    }
-    char * filename = strcpy(filename,inv[2]);
-    FILE *f;
-    if (inc > 3)
-    {
-        int i = 3;
-        while(i < inc)
-        {
-            strcat(filename, " ");
-            strcat(filename,inv[i]);
-            i++;
+        // check connective words
+    else if (compare_token(inv[1], "from") == 0) {
+        // if no filename behind connective word
+        if (inc < 3) {
+            snprintf(response, n, "Filename cannot be empty!");
+            return 0;
         }
+        // filename present, push start index back by 1
+        start = 2;
     }
-    f = fopen(filename,"r");
->>>>>>> Stashed changes
+    // build filename
+    char *filename = strcpy(filename, inv[start]);
+    for (int i = start + 1; i < inc; i++) {
+        strcat(filename, " ");
+        strcat(filename, inv[i]);
+    }
+
+    FILE *f;
+    f = fopen(filename, "r");
     // if unavailable to open file
-    if(f == NULL){
-        snprintf(response,n, "File Not Found!");
+    if (f == NULL) {
+        snprintf(response, n, "File Not Found!");
         return 0;
     }
     int nresponses = knowledge_read(f);
     fclose(f);
-<<<<<<< Updated upstream
-    snprintf(response,n,"Loaded %d responses from file %s", nresponses,inv[1]);
-=======
-    snprintf(response,n,"Loaded %d responses from file %s", nresponses,filename);
->>>>>>> Stashed changes
+    snprintf(response, n, "Loaded %d responses from file %s", nresponses, filename);
     return 0;
 }
 
@@ -224,10 +212,10 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n) {
  */
 int chatbot_is_question(const char *intent) {
 
-	/* to be implemented */
+    /* to be implemented */
     char keywords[3][6] = {"what", "where", "who"};
-    for(int i=0; i < 3; i++){
-        if(compare_token(intent,keywords[i]) == 0){
+    for (int i = 0; i < 3; i++) {
+        if (compare_token(intent, keywords[i]) == 0) {
             return 1;
         }
     }
@@ -250,9 +238,9 @@ int chatbot_is_question(const char *intent) {
  */
 int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 
-	/* to be implemented */
+    /* to be implemented */
 
-	return 0;
+    return 0;
 
 }
 
@@ -268,7 +256,7 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
  *  0, otherwise
  */
 int chatbot_is_reset(const char *intent) {
-    return compare_token(intent,"RESET") == 0;
+    return compare_token(intent, "RESET") == 0;
 }
 
 /*
@@ -281,9 +269,9 @@ int chatbot_is_reset(const char *intent) {
  *   0 (the chatbot always continues chatting after beign reset)
  */
 int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
-	knowledge_reset();
-	snprintf(response,n, "Reset Completed Successfully!");
-	return 0;
+    knowledge_reset();
+    snprintf(response, n, "Reset Completed Successfully!");
+    return 0;
 }
 
 
@@ -298,7 +286,7 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
  *  0, otherwise
  */
 int chatbot_is_save(const char *intent) {
-	return compare_token(intent,"SAVE") == 0;
+    return compare_token(intent, "SAVE") == 0;
 }
 
 
@@ -312,53 +300,34 @@ int chatbot_is_save(const char *intent) {
  *   0 (the chatbot always continues chatting after saving knowledge)
  */
 int chatbot_do_save(int inc, char *inv[], char *response, int n) {
-<<<<<<< Updated upstream
-	if(inv[1] == NULL){
-	    snprintf(response,n, "CANNOT SAVE A FILE WITH NO NAME!");
-	    return 0;
-    }
-    FILE *f;
-    f = fopen(inv[1], "w");
-    if (f == NULL){
-        snprintf(response,n,"Error! Unable to get haandle to file.");
-=======
     //BUGGY CANT HAVE TWO INSTANCES OF COMPARE
-    if(inv[1] == NULL || strcmp(inv[1],"AS") != 0)
-    {
-        snprintf(response,n,"WHERE ARE YOU SAVING TO!");
+    if (inv[1] == NULL || strcmp(inv[1], "AS") != 0) {
+        snprintf(response, n, "WHERE ARE YOU SAVING TO!");
         return 0;
     }
-	if(inv[2] == NULL)
-	{
-	    snprintf(response,n, "CANNOT SAVE A FILE WITH NO NAME!");
-	    return 0;
+    if (inv[2] == NULL) {
+        snprintf(response, n, "CANNOT SAVE A FILE WITH NO NAME!");
+        return 0;
     }
-	char * filename = strcpy(filename,inv[2]);
+    char *filename = strcpy(filename, inv[2]);
     FILE *f;
-    if (inc > 3)
-    {
+    if (inc > 3) {
         int i = 3;
-        while(i < inc)
-        {
+        while (i < inc) {
             strcat(filename, " ");
-            strcat(filename,inv[i]);
+            strcat(filename, inv[i]);
             i++;
         }
     }
     f = fopen(filename, "w");
-    if (f == NULL){
-        snprintf(response,n,"Error! Unable to get handle to file.");
->>>>>>> Stashed changes
+    if (f == NULL) {
+        snprintf(response, n, "Error! Unable to get handle to file.");
         return 0;
     }
     knowledge_write(f);
     fclose(f);
-<<<<<<< Updated upstream
     // BUG: DOES NOT ACCOUNT FOR CONNECTIVE WORDS
-    snprintf(response,n,"Entries has been successfully saved to %s", inv[1]);
-=======
-    snprintf(response,n,"Entries has been successfully saved to %s", filename);
->>>>>>> Stashed changes
+    snprintf(response, n, "Entries has been successfully saved to %s", inv[1]);
     return 0;
 }
 
@@ -376,9 +345,9 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
  */
 int chatbot_is_smalltalk(const char *intent) {
 
-	/* to be implemented */
+    /* to be implemented */
 
-	return 0;
+    return 0;
 
 }
 
@@ -395,8 +364,8 @@ int chatbot_is_smalltalk(const char *intent) {
  */
 int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
 
-	/* to be implemented */
+    /* to be implemented */
 
-	return 0;
+    return 0;
 
 }
