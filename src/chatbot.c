@@ -163,6 +163,7 @@ int chatbot_is_load(const char *intent) {
  *   0 (the chatbot always continues chatting after loading knowledge)
  */
 int chatbot_do_load(int inc, char *inv[], char *response, int n) {
+<<<<<<< Updated upstream
     // if empty filename
     if(inv[1] == NULL){
         snprintf(response,n,"Filename cannot be empty");
@@ -171,6 +172,30 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n) {
     FILE *f;
     // BUG:DOES NOT ACCOUNT FOR CONNECTIVE WORDS
     f = fopen(inv[1],"r");
+=======
+    if((inv[1] == NULL) || (strcmp(inv[1],"FROM") != 0))
+    {
+        snprintf(response,n, "WHERE ARE YOU LOADING FROM");
+        return 0;
+    }
+    if(inv[2] == NULL){
+        snprintf(response,n,"Filename cannot be empty");
+        return 0;
+    }
+    char * filename = strcpy(filename,inv[2]);
+    FILE *f;
+    if (inc > 3)
+    {
+        int i = 3;
+        while(i < inc)
+        {
+            strcat(filename, " ");
+            strcat(filename,inv[i]);
+            i++;
+        }
+    }
+    f = fopen(filename,"r");
+>>>>>>> Stashed changes
     // if unavailable to open file
     if(f == NULL){
         snprintf(response,n, "File Not Found!");
@@ -178,7 +203,11 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n) {
     }
     int nresponses = knowledge_read(f);
     fclose(f);
+<<<<<<< Updated upstream
     snprintf(response,n,"Loaded %d responses from file %s", nresponses,inv[1]);
+=======
+    snprintf(response,n,"Loaded %d responses from file %s", nresponses,filename);
+>>>>>>> Stashed changes
     return 0;
 }
 
@@ -283,6 +312,7 @@ int chatbot_is_save(const char *intent) {
  *   0 (the chatbot always continues chatting after saving knowledge)
  */
 int chatbot_do_save(int inc, char *inv[], char *response, int n) {
+<<<<<<< Updated upstream
 	if(inv[1] == NULL){
 	    snprintf(response,n, "CANNOT SAVE A FILE WITH NO NAME!");
 	    return 0;
@@ -291,12 +321,44 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
     f = fopen(inv[1], "w");
     if (f == NULL){
         snprintf(response,n,"Error! Unable to get haandle to file.");
+=======
+    //BUGGY CANT HAVE TWO INSTANCES OF COMPARE
+    if(inv[1] == NULL || strcmp(inv[1],"AS") != 0)
+    {
+        snprintf(response,n,"WHERE ARE YOU SAVING TO!");
+        return 0;
+    }
+	if(inv[2] == NULL)
+	{
+	    snprintf(response,n, "CANNOT SAVE A FILE WITH NO NAME!");
+	    return 0;
+    }
+	char * filename = strcpy(filename,inv[2]);
+    FILE *f;
+    if (inc > 3)
+    {
+        int i = 3;
+        while(i < inc)
+        {
+            strcat(filename, " ");
+            strcat(filename,inv[i]);
+            i++;
+        }
+    }
+    f = fopen(filename, "w");
+    if (f == NULL){
+        snprintf(response,n,"Error! Unable to get handle to file.");
+>>>>>>> Stashed changes
         return 0;
     }
     knowledge_write(f);
     fclose(f);
+<<<<<<< Updated upstream
     // BUG: DOES NOT ACCOUNT FOR CONNECTIVE WORDS
     snprintf(response,n,"Entries has been successfully saved to %s", inv[1]);
+=======
+    snprintf(response,n,"Entries has been successfully saved to %s", filename);
+>>>>>>> Stashed changes
     return 0;
 }
 
