@@ -300,25 +300,30 @@ int chatbot_is_save(const char *intent) {
  *   0 (the chatbot always continues chatting after saving knowledge)
  */
 int chatbot_do_save(int inc, char *inv[], char *response, int n) {
-    //BUGGY CANT HAVE TWO INSTANCES OF COMPARE
-    if (inv[1] == NULL || strcmp(inv[1], "AS") != 0) {
-        snprintf(response, n, "WHERE ARE YOU SAVING TO!");
+    int start = 1;
+    // if input is intent only
+    if (inc == 1) {
+        snprintf(response, n, "Filename cannot be empty!");
         return 0;
     }
-    if (inv[2] == NULL) {
-        snprintf(response, n, "CANNOT SAVE A FILE WITH NO NAME!");
-        return 0;
-    }
-    char *filename = strcpy(filename, inv[2]);
-    FILE *f;
-    if (inc > 3) {
-        int i = 3;
-        while (i < inc) {
-            strcat(filename, " ");
-            strcat(filename, inv[i]);
-            i++;
+        // check connective words
+    else if (compare_token(inv[1], "as") == 0 || compare_token(inv[1],"to") == 0) {
+        // if no filename behind connective word
+        if (inc < 3) {
+            snprintf(response, n, "Filename cannot be empty!");
+            return 0;
         }
+        // filename present, push start index back by 1
+        start = 2;
     }
+    // build filename
+    char *filename = strcpy(filename, inv[start]);
+    for (int i = start + 1; i < inc; i++) {
+        strcat(filename, " ");
+        strcat(filename, inv[i]);
+    }
+
+    FILE *f;
     f = fopen(filename, "w");
     if (f == NULL) {
         snprintf(response, n, "Error! Unable to get handle to file.");
@@ -326,8 +331,7 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
     }
     knowledge_write(f);
     fclose(f);
-    // BUG: DOES NOT ACCOUNT FOR CONNECTIVE WORDS
-    snprintf(response, n, "Entries has been successfully saved to %s", inv[1]);
+    snprintf(response, n, "Entries has been successfully saved to %s", filename);
     return 0;
 }
 
