@@ -349,10 +349,13 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
  */
 int chatbot_is_smalltalk(const char *intent) {
 
-    /* to be implemented */
-
+    char keywords[5][10] = {"hello","hi","bye","goodbye","target"};
+    for (int i=0; i<5; i++){
+        if (compare_token(intent, keywords[i]) == 0) {
+            return 1;
+        }
+    }
     return 0;
-
 }
 
 
@@ -368,8 +371,17 @@ int chatbot_is_smalltalk(const char *intent) {
  */
 int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
 
-    /* to be implemented */
-
+    if(compare_token(inv[0], "hello") == 0 || compare_token(inv[0], "hi") == 0) {
+        snprintf(response, n, "Hello!");
+        return 0;
+    }
+    else if(compare_token(inv[0], "goodbye") == 0 || compare_token(inv[0],"bye") == 0) {
+        snprintf(response, n, "Goodbye");
+        return 1;
+    }
+    else if(compare_token(inv[0], "target") == 0){
+        snprintf(response, n, "Eliminated");
+        return 0;
+    }
     return 0;
-
 }
