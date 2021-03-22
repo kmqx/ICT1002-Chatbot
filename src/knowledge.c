@@ -188,6 +188,8 @@ int knowledge_read(FILE *f) {
         tokenptr = strtok(line, "=");
         strcpy(entitybuf, tokenptr);
         tokenptr = strtok(NULL, "=");
+        // replace newline with null to prevent double newline when write
+        *strchr(tokenptr,'\n') = '\0';
         strcpy(responsebuf, tokenptr);
         int success = knowledge_put(intentkey, entitybuf, responsebuf);
         if (success != KB_OK) {
@@ -233,7 +235,7 @@ void knowledge_write(FILE *f) {
         // node has response for what
         if (current->what[0] != '\0'){
             // no need \n as response alr has \n
-            fprintf(f,"%s=%s",current->entity,current->what);
+            fprintf(f,"%s=%s\n",current->entity,current->what);
         }
         current = current->next;
     }
@@ -246,7 +248,7 @@ void knowledge_write(FILE *f) {
         // node has response for where
         if (current->where[0] != '\0'){
             // no need \n as response alr has \n
-            fprintf(f,"%s=%s",current->entity,current->where);
+            fprintf(f,"%s=%s\n",current->entity,current->where);
         }
         current = current->next;
     }
@@ -259,7 +261,7 @@ void knowledge_write(FILE *f) {
         // node has response for what
         if (current->who[0] != '\0'){
             // no need \n as response alr has \n
-            fprintf(f,"%s=%s",current->entity,current->who);
+            fprintf(f,"%s=%s\n",current->entity,current->who);
         }
         current = current->next;
     }
