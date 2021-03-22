@@ -27,6 +27,7 @@
 #define KB_NOTFOUND -1
 #define KB_INVALID  -2
 #define KB_NOMEM    -3
+#define F_INVALID   -4
 
 struct EntityLL{
     char entity[MAX_ENTITY];
