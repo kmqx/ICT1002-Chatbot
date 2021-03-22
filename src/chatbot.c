@@ -51,9 +51,7 @@
  * Returns: the name of the chatbot as a null-terminated string
  */
 const char *chatbot_botname() {
-
     return "Chatbot";
-
 }
 
 
@@ -63,9 +61,7 @@ const char *chatbot_botname() {
  * Returns: the name of the user as a null-terminated string
  */
 const char *chatbot_username() {
-
     return "User";
-
 }
 
 
@@ -80,7 +76,6 @@ const char *chatbot_username() {
  *   1, if the chatbot should stop (i.e. it detected the EXIT intent)
  */
 int chatbot_main(int inc, char *inv[], char *response, int n) {
-
     /* check for empty input */
     if (inc < 1) {
         snprintf(response, n, "");
@@ -134,7 +129,7 @@ int chatbot_is_exit(const char *intent) {
  */
 int chatbot_do_exit(int inc, char *inv[], char *response, int n) {
     snprintf(response, n, "Goodbye!");
-    return 0;
+    return 1;
 }
 
 
@@ -211,8 +206,6 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n) {
  *  0, otherwise
  */
 int chatbot_is_question(const char *intent) {
-
-    /* to be implemented */
     char keywords[3][6] = {"what", "where", "who"};
     for (int i = 0; i < 3; i++) {
         if (compare_token(intent, keywords[i]) == 0) {
@@ -272,13 +265,12 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
         //insert new answer
         prompt_user(answer,n,"I do not know the answer to your question. Please enter a response.");
         knowledge_put(inv[0],entity,answer);
+        snprintf(response,n,"Thank you.");
         return 0;
     }
-
     //final output = entity + is/are + response from knowledge_get
     snprintf(response,n,answer);
     return 0;
-
 }
 
 
@@ -385,7 +377,6 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
  *  0, otherwise
  */
 int chatbot_is_smalltalk(const char *intent) {
-
     char keywords[5][10] = {"hello","hi","bye","goodbye","target"};
     for (int i=0; i<5; i++){
         if (compare_token(intent, keywords[i]) == 0) {
@@ -407,7 +398,6 @@ int chatbot_is_smalltalk(const char *intent) {
  *   1, if the chatbot should stop chatting (e.g. the smalltalk was "goodbye" etc.)
  */
 int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
-
     if(compare_token(inv[0], "hello") == 0 || compare_token(inv[0], "hi") == 0) {
         snprintf(response, n, "Hello!");
         return 0;
