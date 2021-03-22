@@ -119,6 +119,9 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
     if (!entityFound){
         // allocate memory to prevent unexpected behaviour
         struct EntityLL *target = calloc(1,sizeof(struct EntityLL));
+        if (target == NULL){
+            return KB_NOMEM;
+        }
         strcpy(target->entity,entity);
         memset(target->what,0,MAX_RESPONSE);
         memset(target->where,0,MAX_RESPONSE);
@@ -163,7 +166,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
  */
 int knowledge_read(FILE *f) {
     if(f == NULL){
-        return -1;
+        return F_INVALID;
     }
     int count = 0;
     char entitybuf[MAX_ENTITY];
@@ -188,6 +191,9 @@ int knowledge_read(FILE *f) {
         tokenptr = strtok(line, "=");
         strcpy(entitybuf, tokenptr);
         tokenptr = strtok(NULL, "=");
+        if (tokenptr == NULL){
+            return F_INVALID;
+        }
         // replace newline with null to prevent double newline when write
         *strchr(tokenptr,'\n') = '\0';
         strcpy(responsebuf, tokenptr);

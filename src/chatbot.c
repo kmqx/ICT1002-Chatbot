@@ -189,6 +189,10 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n) {
         return 0;
     }
     int nresponses = knowledge_read(f);
+    if (nresponses == F_INVALID){
+        snprintf(response,n,"Invalid file supplied. Please check again.");
+        return 0;
+    }
     fclose(f);
     snprintf(response, n, "Loaded %d responses from file %s", nresponses, filename);
     return 0;
