@@ -226,7 +226,7 @@ int chatbot_is_question(const char *intent) {
 /*
  * Answer a question.
  *
- * inv[0] contains the the question word.
+ * inv[0] contains the question word.
  * inv[1] may contain "is" or "are"; if so, it is skipped.
  * The remainder of the words form the entity.
  *
@@ -237,9 +237,46 @@ int chatbot_is_question(const char *intent) {
  *   0 (the chatbot always continues chatting after a question)
  */
 int chatbot_do_question(int inc, char *inv[], char *response, int n) {
+    char answer[MAX_RESPONSE];
+    char entity[MAX_ENTITY];
+    int entityStart;
 
-    /* to be implemented */
+    if (inc < 2) {
+        snprintf(response,n,"That is not a valid question.");
+        return 0;
+    }
 
+    if (compare_token(inv[1],"is") == 0 || compare_token(inv[1],"are") == 0) {
+        entityStart = 2;
+    } else {
+        entityStart = 1;
+    }
+
+    // Building entity
+    for (entityStart; entityStart<inc; entityStart++) {
+        strcat(entity,inv[entityStart]);
+        strcat(entity," ");
+    }
+    if (strlen(entity) == 0) {
+        snprintf(response,n,"I do not understand your question.");
+        return 0;
+    }
+    *strrchr(entity, ' ') = '\0';
+
+    int isSuccess = knowledge_get(inv[0], entity, answer, n);
+    if (isSuccess == KB_INVALID) {
+        //question is not a question inv[0] is not what who where etc
+        snprintf(response,n,"I do not understand your question.");
+        return 0;
+    } else if (isSuccess == KB_NOTFOUND) {
+        //insert new answer
+        prompt_user(answer,n,"I do not know the answer to your question. Please enter a response.");
+        knowledge_put(inv[0],entity,answer);
+        return 0;
+    }
+
+    //final output = entity + is/are + response from knowledge_get
+    snprintf(response,n,answer);
     return 0;
 
 }
