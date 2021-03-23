@@ -362,6 +362,14 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
     }
 
     FILE *f;
+    if (fopen(filename, "r")){
+        char consent;
+        prompt_user(&consent,2,"File exists. Overwrite? [y/n]: ");
+        if (tolower(consent) != 'y'){
+            snprintf(response,n,"Operation Aborted.");
+            return 0;
+        }
+    }
     f = fopen(filename, "w");
     if (f == NULL) {
         snprintf(response, n, "Error! Unable to get handle to file.");
