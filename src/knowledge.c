@@ -37,7 +37,6 @@ struct EntityLL *tail;
  *   KB_INVALID, if 'intent' is not a recognised question word
  */
 int knowledge_get(const char *intent, const char *entity, char *response, int n) {
-	/* to be implemented */
 	if (!chatbot_is_question(intent)){
 	    return KB_INVALID;
 	}
@@ -97,8 +96,6 @@ int knowledge_get(const char *intent, const char *entity, char *response, int n)
  *   KB_INVALID, if the intent is not a valid question word
  */
 int knowledge_put(const char *intent, const char *entity, const char *response) {
-
-	/* to be implemented */
 	// invalid question word
 	if(!chatbot_is_question(intent)){
 	    return KB_INVALID;
@@ -122,6 +119,9 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
     if (!entityFound){
         // allocate memory to prevent unexpected behaviour
         struct EntityLL *target = calloc(1,sizeof(struct EntityLL));
+        if (target == NULL){
+            return KB_NOMEM;
+        }
         strcpy(target->entity,entity);
         memset(target->what,0,MAX_RESPONSE);
         memset(target->where,0,MAX_RESPONSE);
@@ -165,9 +165,8 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
  * Returns: the number of entity/response pairs successful read from the file
  */
 int knowledge_read(FILE *f) {
-	/* to be implemented */
     if(f == NULL){
-        return -1;
+        return F_INVALID;
     }
     int count = 0;
     char entitybuf[MAX_ENTITY];
@@ -192,6 +191,11 @@ int knowledge_read(FILE *f) {
         tokenptr = strtok(line, "=");
         strcpy(entitybuf, tokenptr);
         tokenptr = strtok(NULL, "=");
+        if (tokenptr == NULL){
+            return F_INVALID;
+        }
+        // replace newline with null to prevent double newline when write
+        *strchr(tokenptr,'\n') = '\0';
         strcpy(responsebuf, tokenptr);
         int success = knowledge_put(intentkey, entitybuf, responsebuf);
         if (success != KB_OK) {
@@ -204,60 +208,6 @@ int knowledge_read(FILE *f) {
     }
     return count;
 }
-
-// debug
-/*
-int compare_token(const char *token1, const char *token2) {
-    int i = 0;
-    while (token1[i] != '\0' && token2[i] != '\0') {
-        if (toupper(token1[i]) < toupper(token2[i]))
-            return -1;
-        else if (toupper(token1[i]) > toupper(token2[i]))
-            return 1;
-        i++;
-    }
-
-    if (token1[i] == '\0' && token2[i] == '\0')
-        return 0;
-    else if (token1[i] == '\0')
-        return -1;
-    else
-        return 1;
-}
-int main(){
-    FILE *fp = fopen("..\\src\\ICT1002_Group Project Assignment_Sample.ini","r");
-    int c = knowledge_read(fp);
-    printf("%d",c);
-    struct EntityLL *c1 = head;
-    while(c1 != NULL){
-        printf("-------------------------------\n");
-        printf("Entity: %s\n",c1->entity);
-        printf("what: %s\n",c1->what);
-        printf("where: %s\n",c1->where);
-        printf("who: %s\n",c1->who);
-        printf("-------------------------------\n");
-        c1 = c1->next;
-    }
-    char tmp[MAX_RESPONSE];
-    int success;
-    success = knowledge_get("where","SIT",&tmp,MAX_RESPONSE);
-    if (success != KB_OK){
-        printf("Failed");
-        return 0;
-    }
-    FILE *test = fopen("..\\test.ini","w");
-    knowledge_write(test);
-    printf("%s",tmp);
-    knowledge_reset();
-    success = knowledge_get("where","SIT",&tmp,MAX_RESPONSE);
-    if (success != KB_OK){
-        printf("Failed");
-        return success;
-    }
-    printf("%s",tmp);
-    return 0;
-}
-*/
 
 /*
  * Reset the knowledge base, removing all know entitities from all intents.
@@ -284,8 +234,6 @@ void knowledge_reset() {
  *   f - the file
  */
 void knowledge_write(FILE *f) {
-
-	/* to be implemented */
 	struct EntityLL *current = head;
     fprintf(f,"[what]\n");
     // traverse linked-list to print for what
@@ -293,7 +241,7 @@ void knowledge_write(FILE *f) {
         // node has response for what
         if (current->what[0] != '\0'){
             // no need \n as response alr has \n
-            fprintf(f,"%s=%s",current->entity,current->what);
+            fprintf(f,"%s=%s\n",current->entity,current->what);
         }
         current = current->next;
     }
@@ -306,7 +254,7 @@ void knowledge_write(FILE *f) {
         // node has response for where
         if (current->where[0] != '\0'){
             // no need \n as response alr has \n
-            fprintf(f,"%s=%s",current->entity,current->where);
+            fprintf(f,"%s=%s\n",current->entity,current->where);
         }
         current = current->next;
     }
@@ -319,7 +267,7 @@ void knowledge_write(FILE *f) {
         // node has response for what
         if (current->who[0] != '\0'){
             // no need \n as response alr has \n
-            fprintf(f,"%s=%s",current->entity,current->who);
+            fprintf(f,"%s=%s\n",current->entity,current->who);
         }
         current = current->next;
     }

@@ -127,6 +127,11 @@ void prompt_user(char *buf, int n, const char *format, ...) {
 	/* get the response from the user */
 	fgets(buf, n, stdin);
 	char *nl = strchr(buf, '\n');
-	if (nl != NULL)
+	if (nl != NULL){
 		*nl = '\0';
+		return;
+	}
+    // flush stdin to prevent input from overflowing
+    int ch;
+    while ((ch = getchar()) != EOF && ch != '\n');/* do nothing*/
 }
