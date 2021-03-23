@@ -42,6 +42,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "chat1002.h"
 
 
@@ -268,6 +269,10 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
     } else if (isSuccess == KB_NOTFOUND) {
         //insert new answer
         prompt_user(answer,n,"I do not know the answer to your question. Please enter a response.");
+        if (isspace(answer) || strlen(answer) == 0){
+            snprintf(response,n,">:(");
+            return 0;
+        }
         knowledge_put(inv[0],entity,answer);
         snprintf(response,n,"Thank you.");
         return 0;
