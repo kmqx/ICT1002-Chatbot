@@ -19,8 +19,8 @@
 #include "chat1002.h"
 
 // global vars
-struct EntityLL *head;
-struct EntityLL *tail;
+EntityNode *head;
+EntityNode *tail;
 
 /*
  * Get the response to a question.
@@ -41,7 +41,7 @@ int knowledge_get(const char *intent, const char *entity, char *response, int n)
 	    return KB_INVALID;
 	}
 	// valid question
-	struct EntityLL *current;
+	EntityNode *current;
 	current = head;
 	int found = 0;
 	// traverse and search linked-list for
@@ -100,7 +100,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
 	if(!chatbot_is_question(intent)){
 	    return KB_INVALID;
 	}
-	struct EntityLL *current;
+	EntityNode *current;
 	current = head;
 	int entityFound = 0;
 	// existing data structure
@@ -118,7 +118,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
     // target entity does not exist, create one and add to linked-list
     if (!entityFound){
         // allocate memory to prevent unexpected behaviour
-        struct EntityLL *target = calloc(1,sizeof(struct EntityLL));
+        EntityNode *target = calloc(1,sizeof(EntityNode));
         if (target == NULL){
             return KB_NOMEM;
         }
@@ -214,11 +214,11 @@ int knowledge_read(FILE *f) {
  */
 void knowledge_reset() {
 	// free all nodes in linked-list and reset head & tail
-	struct EntityLL *current = head;
-    struct EntityLL *next;
+	EntityNode *current = head;
+    EntityNode *next;
 	while (current != NULL){
 	   next = current->next;
-	   memset(current,0, sizeof(struct EntityLL));
+	   memset(current,0, sizeof(EntityNode));
 	   free(current);
 	   current = next;
 	}
@@ -234,7 +234,7 @@ void knowledge_reset() {
  *   f - the file
  */
 void knowledge_write(FILE *f) {
-	struct EntityLL *current = head;
+	EntityNode *current = head;
     fprintf(f,"[what]\n");
     // traverse linked-list to print for what
     while (current != NULL){
