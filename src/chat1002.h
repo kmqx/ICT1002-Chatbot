@@ -29,13 +29,13 @@
 #define KB_NOMEM    -3
 #define F_INVALID   -4
 
-struct EntityLL{
+typedef struct node {
     char entity[MAX_ENTITY];
     char what[MAX_RESPONSE];
     char who[MAX_RESPONSE];
     char where[MAX_RESPONSE];
-    struct EntityLL *next;
-};
+    struct node *next;
+} EntityNode;
 
 
 /* functions defined in main.c */
