@@ -43,6 +43,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
 #include "chat1002.h"
 
 
@@ -269,8 +270,21 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
         snprintf(response,n,"I do not understand your question.");
         return 0;
     } else if (isSuccess == KB_NOTFOUND) {
-        //insert new answer
-        prompt_user(answer,n,"I do not know the answer to your question. Please enter a response.");
+        // insert new answer since not found
+
+        // rebuild question to re-display
+        char *qn = calloc(1,MAX_INPUT);
+        if (qn == NULL){
+            snprintf(response,n,"failed to allocate memory for question.");
+            return 0;
+        }
+        char *holder = qn;
+        for (int i=0;i<inc;i++){
+            sprintf(holder," %s",inv[i]);
+            holder = holder + strlen(inv[i]) + 1;
+        }
+        prompt_user(answer,n,"I don't know.%s?",qn);
+
         if (isspace(answer) || strlen(answer) == 0){
             snprintf(response,n,">:(");
             return 0;
@@ -396,8 +410,8 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
  *  0, otherwise
  */
 int chatbot_is_smalltalk(const char *intent) {
-    char keywords[6][10] = {"hello","hi","bye","goodbye","target","how"};
-    for (int i=0; i<6; i++){
+    char keywords[7][10] = {"hello","hi","bye","goodbye","target","how","it's"};
+    for (int i=0; i<7; i++){
         if (compare_token(intent, keywords[i]) == 0) {
             return 1;
         }
@@ -425,7 +439,21 @@ int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
         snprintf(response, n, "How what now?");
         return 0;
     }
-    if(compare_token(inv[0], "hello") == 0 || compare_token(inv[0], "hi") == 0) {
+    else if (compare_token(inv[0],"it's") == 0){
+        char *output = calloc(1,MAX_RESPONSE);
+        if (output == NULL){
+            snprintf(response,n,"Failed to allocate memory for response!");
+            return 0;
+        }
+        char *holder = output;
+        for (int i=1;i<inc;i++){
+            sprintf(holder," %s",inv[i]);
+            holder = holder + strlen(inv[i]) + 1;
+        }
+        snprintf(response,n,"Indeed it's%s.",output);
+        return 0;
+    }
+    else if(compare_token(inv[0], "hello") == 0 || compare_token(inv[0], "hi") == 0) {
         snprintf(response, n, "Hello!");
         return 0;
     }
