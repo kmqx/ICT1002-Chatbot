@@ -77,6 +77,8 @@ const char *chatbot_username() {
  *   1, if the chatbot should stop (i.e. it detected the EXIT intent)
  */
 int chatbot_main(int inc, char *inv[], char *response, int n) {
+    // force flush response buffer to prevent reset response from popping up
+    *response = '\0';
     /* check for empty input */
     if (inc < 1) {
         snprintf(response, n, "");
@@ -394,8 +396,8 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
  *  0, otherwise
  */
 int chatbot_is_smalltalk(const char *intent) {
-    char keywords[5][10] = {"hello","hi","bye","goodbye","target"};
-    for (int i=0; i<5; i++){
+    char keywords[6][10] = {"hello","hi","bye","goodbye","target","how"};
+    for (int i=0; i<6; i++){
         if (compare_token(intent, keywords[i]) == 0) {
             return 1;
         }
@@ -415,6 +417,14 @@ int chatbot_is_smalltalk(const char *intent) {
  *   1, if the chatbot should stop chatting (e.g. the smalltalk was "goodbye" etc.)
  */
 int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
+    if(compare_token(inv[0],"how") == 0){
+        if (compare_token(inv[inc-1],"you") == 0){
+            snprintf(response, n, "Not too bad, can't complain.");
+            return 0;
+        }
+        snprintf(response, n, "How what now?");
+        return 0;
+    }
     if(compare_token(inv[0], "hello") == 0 || compare_token(inv[0], "hi") == 0) {
         snprintf(response, n, "Hello!");
         return 0;
