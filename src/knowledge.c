@@ -122,7 +122,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
         if (target == NULL){
             return KB_NOMEM;
         }
-        strcpy(target->entity,entity);
+        snprintf(target->entity,MAX_ENTITY,"%s",entity);
         memset(target->what,0,MAX_RESPONSE);
         memset(target->where,0,MAX_RESPONSE);
         memset(target->who,0,MAX_RESPONSE);
@@ -142,15 +142,15 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
     // check and set response
     if(compare_token(intent,"what") == 0){
         // process what
-        strcpy(current->what,response);
+        snprintf(current->what,MAX_RESPONSE,"%s",response);
     }
     else if (compare_token(intent, "where") == 0){
         // process where
-        strcpy(current->where,response);
+        snprintf(current->where,MAX_RESPONSE,"%s",response);
     }
     else{
         // process who
-        strcpy(current->who,response);
+        snprintf(current->who,MAX_RESPONSE,"%s",response);
     }
     return KB_OK;
 }
