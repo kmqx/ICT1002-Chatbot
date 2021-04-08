@@ -45,6 +45,12 @@ int main(int argc, char *argv[]) {
 			printf("%s: ", chatbot_username());
 			fgets(input, MAX_INPUT, stdin);
 
+			char *nl = strchr(input, '\n');
+            if (nl == NULL){
+                int ch;
+                while ((ch = getchar()) != EOF && ch != '\n');/* do nothing*/
+            }
+
 			/* split it into words */
 			inc = 0;
 			inv[inc] = strtok(input, delimiters);
