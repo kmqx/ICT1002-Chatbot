@@ -189,14 +189,14 @@ int knowledge_read(FILE *f) {
             continue;
         }
         tokenptr = strtok(line, "=");
-        strncpy(entitybuf, tokenptr,MAX_ENTITY);
+        snprintf(entitybuf, MAX_ENTITY,"%s" ,tokenptr);
         tokenptr = strtok(NULL, "=");
         if (tokenptr == NULL){
             return F_INVALID;
         }
         // replace newline with null to prevent double newline when write
         *strchr(tokenptr,'\n') = '\0';
-        strncpy(responsebuf, tokenptr,MAX_RESPONSE);
+        snprintf(responsebuf, MAX_RESPONSE,"%s",tokenptr);
         int success = knowledge_put(intentkey, entitybuf, responsebuf);
         if (success != KB_OK) {
             return success;
