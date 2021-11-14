@@ -1,13 +1,5 @@
 # ICT1002-Chatbot
 
-## Steps
-Download CLion from jetbrains
+This repository contains the source code, in partial fulfilment, of the module ICT1002 Computer Organisation and Architecture. 
 
-Download and install mingw (x86-64)
-
-- ensure that x86-64 is selected for architecture
-- win32 for threads is selected 
-
-Compile and debug program from existing CMake file.
-
-![workflow status](https://github.com/alloygoh/ICT1002-Chatbot/actions/workflows/cmake.yml/badge.svg)
+The chatbot was written in accordance to the instructions and templates distributed by the module.
