@@ -139,5 +139,5 @@ void prompt_user(char *buf, int n, const char *format, ...) {
 	}
     // flush stdin to prevent input from overflowing
     int ch;
-    while ((ch = getchar()) != EOF && ch != '\n');/* do nothing*/
+    while ((ch != '\n' && ch = getchar()) != EOF);/* do nothing*/
 }
